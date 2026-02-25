@@ -1,0 +1,48 @@
+name: OpenAPI Drift Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  drift-check:
+    name: Verify openapi.json is up to date
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "sqlite+aiosqlite:///./test.db"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install backend dependencies
+        run: uv sync
+        working-directory: backend
+
+      - name: Save committed openapi.json
+        run: cp openapi.json openapi.committed.json
+
+      - name: Regenerate openapi.json from FastAPI app
+        run: uv run python -m scripts.export_openapi
+        working-directory: backend
+
+      - name: Check for OpenAPI schema drift
+        run: |
+          if ! diff openapi.committed.json openapi.json; then
+            echo ""
+            echo "❌ openapi.json is out of date."
+            echo "   The FastAPI app generates a schema that differs from the committed openapi.json."
+            echo "   Run \`./scripts/generate.sh\` locally and commit the updated openapi.json."
+            exit 1
+          fi
+          echo "✅ openapi.json is up to date."

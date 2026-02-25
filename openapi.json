@@ -7,7 +7,9 @@
   "paths": {
     "/users/": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "List Users",
         "operationId": "list_users_users__get",
         "responses": {
@@ -28,18 +30,20 @@
         }
       },
       "post": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Create User",
         "operationId": "create_user_users__post",
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UserCreate"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "201": {
@@ -67,7 +71,9 @@
     },
     "/users/{user_id}": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Get User",
         "operationId": "get_user_users__user_id__get",
         "parameters": [
@@ -106,7 +112,9 @@
         }
       },
       "patch": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Update User",
         "operationId": "update_user_users__user_id__patch",
         "parameters": [
@@ -155,7 +163,9 @@
         }
       },
       "delete": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Delete User",
         "operationId": "delete_user_users__user_id__delete",
         "parameters": [
@@ -215,7 +225,10 @@
           }
         },
         "type": "object",
-        "required": ["name", "email"],
+        "required": [
+          "name",
+          "email"
+        ],
         "title": "UserCreate"
       },
       "UserRead": {
@@ -240,7 +253,12 @@
           }
         },
         "type": "object",
-        "required": ["id", "name", "email", "created_at"],
+        "required": [
+          "id",
+          "name",
+          "email",
+          "created_at"
+        ],
         "title": "UserRead"
       },
       "UserUpdate": {
@@ -294,10 +312,21 @@
           "type": {
             "type": "string",
             "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
           }
         },
         "type": "object",
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "title": "ValidationError"
       }
     }
