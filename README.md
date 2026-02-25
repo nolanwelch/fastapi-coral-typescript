@@ -2,6 +2,55 @@
 
 A full-stack monorepo template with a **FastAPI** backend and a **React + TypeScript** frontend, connected via an OpenAPI-generated client.
 
+## Local Development Setup
+
+Run the one-liner from the repo root to get a fully working fullstack app:
+
+```bash
+./setup.sh
+```
+
+This script checks prerequisites, installs all dependencies, starts the database, runs migrations, generates the API client, and runs tests — no manual steps required.
+
+### Prerequisites
+
+Install these before running `setup.sh`:
+
+- **Python 3.12+** — [python.org/downloads](https://www.python.org/downloads/)
+- **uv** — `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- **Node.js 18+** and **npm** — [nodejs.org](https://nodejs.org) or use [nvm](https://github.com/nvm-sh/nvm)
+- **Docker** and **Docker Compose** (v2 plugin) — [docs.docker.com/get-docker](https://docs.docker.com/get-docker/)
+
+### Environment files
+
+The `.env` files (`backend/.env`, `frontend/.env`) are created by `setup.sh` from their `.env.example` templates. They are gitignored and never committed — each developer keeps their own local copy.
+
+### Pre-commit hooks
+
+The repo uses [pre-commit](https://pre-commit.com/) to catch issues before they reach CI. Hooks are installed automatically by `setup.sh`.
+
+| Hook | Scope | What it catches |
+| --- | --- | --- |
+| **ruff (check)** | `backend/` | Python lint errors (auto-fixes where possible) |
+| **ruff (format)** | `backend/` | Python formatting issues |
+| **mypy** | `backend/` | Python type errors (strict mode) |
+| **tsc** | `frontend/src/` | TypeScript type errors |
+| **openapi-drift** | `backend/app/` | Schema or generated client out of sync with FastAPI app |
+| **trailing-whitespace** | all files | Trailing whitespace |
+| **end-of-file-fixer** | all files | Missing newline at end of file |
+
+Run a single hook manually:
+
+```bash
+uv run pre-commit run <hook-id> --all-files
+```
+
+Skip hooks in an emergency (CI will still catch everything):
+
+```bash
+git commit --no-verify
+```
+
 ## Stack
 
 | Layer    | Technology                                           |
@@ -28,52 +77,6 @@ A full-stack monorepo template with a **FastAPI** backend and a **React + TypeSc
 ├── docker-compose.yml # Full stack via Docker
 └── README.md
 ```
-
-## Local Development Setup
-
-### 1. Database
-
-Start a local PostgreSQL instance or use Docker:
-
-```bash
-docker compose up db -d
-```
-
-This starts PostgreSQL on port `5432` with user `postgres`, password `postgres`, and database `myapp`.
-
-### 2. Backend
-
-```bash
-cd backend
-
-# Copy env file and adjust if needed
-cp .env.example .env
-
-# Install dependencies with uv
-uv sync
-
-# Run the development server
-uv run uvicorn app.main:app --reload --port 8000
-```
-
-The API will be available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
-
-### 3. Frontend
-
-```bash
-cd frontend
-
-# Copy env file
-cp .env.example .env
-
-# Install dependencies
-npm install
-
-# Run the development server
-npm run dev
-```
-
-The frontend will be available at `http://localhost:3000`.
 
 ## Running Tests
 

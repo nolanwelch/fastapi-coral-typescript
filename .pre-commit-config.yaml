@@ -1,0 +1,50 @@
+repos:
+  # ── General file hygiene ──────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  # ── Backend: Ruff linter & formatter ──────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.2
+    hooks:
+      - id: ruff
+        args: [--fix]
+        types_or: [python, pyi]
+        files: ^backend/
+      - id: ruff-format
+        types_or: [python, pyi]
+        files: ^backend/
+
+  # ── Local hooks ───────────────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      # Backend: mypy type checking (uses project venv for type stubs)
+      - id: mypy
+        name: mypy
+        entry: bash -c 'cd backend && uv run mypy app'
+        language: system
+        pass_filenames: false
+        files: ^backend/.*\.py$
+
+      # Frontend: TypeScript type checking
+      - id: tsc
+        name: tsc
+        entry: bash -c 'cd frontend && npx tsc --noEmit'
+        language: system
+        pass_filenames: false
+        files: ^frontend/src/.*\.tsx?$
+
+      # Schema drift: ensure openapi.json and src/api/ stay in sync.
+      # This hook regenerates the schema and checks for uncommitted diffs.
+      # If the schema changed, the newly generated files appear in the diff
+      # and the commit is blocked. Re-commit with the updated files included.
+      - id: openapi-drift
+        name: openapi-drift
+        entry: bash -c './scripts/generate.sh && git diff --exit-code openapi.json frontend/src/api/'
+        language: system
+        pass_filenames: false
+        files: ^backend/app/.*\.py$
+        verbose: true
