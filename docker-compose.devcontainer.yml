@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  devcontainer:
+    image: mcr.microsoft.com/devcontainers/universal:2
+    volumes:
+      - ..:/workspaces/my-app:cached
+    command: sleep infinity
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/myapp
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: myapp
+    volumes:
+      - postgres-devcontainer-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-devcontainer-data:

@@ -1,0 +1,71 @@
+{
+  "name": "my-app",
+  "dockerComposeFile": "../docker-compose.devcontainer.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/my-app",
+  "remoteUser": "codespace",
+  "shutdownAction": "stopCompose",
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  "postCreateCommand": ".devcontainer/post-create.sh",
+
+  "forwardPorts": [8000, 5173, 5432],
+  "portsAttributes": {
+    "8000": { "label": "Backend (FastAPI)" },
+    "5173": { "label": "Frontend (Vite)" },
+    "5432": { "label": "Postgres" }
+  },
+
+  "mounts": [
+    "source=my-app-venv,target=/workspaces/my-app/backend/.venv,type=volume"
+  ],
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.mypy-type-checker",
+        "charliermarsh.ruff",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+        "streetsidesoftware.code-spell-checker",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/workspaces/my-app/backend/.venv/python",
+        "python.terminal.activateEnvironment": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+          }
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "editor.rulers": [88],
+        "mypy-type-checker.importStrategy": "fromEnvironment",
+        "ruff.importStrategy": "fromEnvironment"
+      }
+    }
+  }
+}
