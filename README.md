@@ -51,6 +51,40 @@ Skip hooks in an emergency (CI will still catch everything):
 git commit --no-verify
 ```
 
+## Dev Container
+
+This repo includes a [dev container](https://containers.dev/) configuration so you can get a fully working development environment with zero manual setup. It uses the pre-built **Microsoft Universal dev container image** (`mcr.microsoft.com/devcontainers/universal:2`), which ships with Python 3.12, Node 20, git, and common tooling out of the box. A Postgres 16 database runs as a companion Docker Compose service.
+
+### Opening in VS Code
+
+1. Install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
+2. Open the repo in VS Code.
+3. When prompted, click **Reopen in Container** — or run the command `Dev Containers: Reopen in Container` from the Command Palette.
+
+### Opening in GitHub Codespaces
+
+Click **Code → Codespaces → Create codespace on main** from the GitHub repo page. The dev container configuration is picked up automatically.
+
+### What happens automatically
+
+The `post-create.sh` script runs automatically after the container is created. It installs all backend and frontend dependencies, runs database migrations, and generates the OpenAPI client — no manual setup is needed.
+
+### Running services
+
+`docker compose up` still works inside the container for running the full stack. However, since the database is already running as a Compose service alongside the dev container, you can also start the backend and frontend individually:
+
+```bash
+# Backend
+cd backend && uv run uvicorn app.main:app --reload
+
+# Frontend
+cd frontend && npm run dev
+```
+
+### Venv persistence
+
+The Python virtual environment (`backend/.venv`) is persisted in a named Docker volume (`my-app-venv`). Rebuilding the container does not require re-installing Python dependencies from scratch — only new or changed packages will be synced.
+
 ## Stack
 
 | Layer    | Technology                                           |
