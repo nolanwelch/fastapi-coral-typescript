@@ -150,6 +150,40 @@ docker compose down -v
 | `PATCH`  | `/users/{id}`     | Update a user    |
 | `DELETE` | `/users/{id}`     | Delete a user    |
 
+## CI
+
+This project uses GitHub Actions for continuous integration. All workflows run on push and pull requests to `main`.
+
+| Workflow | File | What it checks |
+| --- | --- | --- |
+| **Backend Lint** | `backend-lint.yml` | Runs `ruff check` and `ruff format --check` on the backend |
+| **Backend Typecheck** | `backend-typecheck.yml` | Runs `mypy` strict type checking on the backend |
+| **Frontend Typecheck** | `frontend-typecheck.yml` | Runs `tsc --noEmit` on the frontend |
+| **OpenAPI Drift Check** | `openapi-drift.yml` | Verifies the committed `openapi.json` matches what the FastAPI app generates |
+
+### Reproduce locally
+
+```bash
+# Backend lint
+cd backend
+uv run ruff check .
+uv run ruff format --check .
+
+# Backend typecheck
+cd backend
+uv run mypy app
+
+# Frontend typecheck
+cd frontend
+npm ci
+npx tsc --noEmit
+
+# OpenAPI drift check
+cp openapi.json openapi.committed.json
+cd backend && uv run python -m scripts.export_openapi && cd ..
+diff openapi.committed.json openapi.json
+```
+
 ## Linting
 
 ### Backend (Ruff)
